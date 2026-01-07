@@ -1,0 +1,8 @@
+[
+  {"id": 1, "p": "¿Qué número sigue? 2, 4, 8, 16...", "o": ["24", "30", "32", "64"], "r": "32", "cat": "Lógica"},
+  {"id": 2, "p": "Si todos los rosas son flores y algunas flores se marchitan, ¿todos los rosas se marchitan?", "o": ["Sí", "No", "Tal vez", "No se puede saber"], "r": "No se puede saber", "cat": "Silogismo"},
+  {"id": 3, "p": "Dedo es a mano como pétalo es a...", "o": ["Jardín", "Flor", "Tallo", "Polen"], "r": "Flor", "cat": "Analogía"},
+  {"id": 4, "p": "¿Qué palabra no encaja?", "o": ["León", "Tigre", "Gato", "Lobo"], "r": "Lobo", "cat": "Clasificación"},
+  {"id": 5, "p": "Si ayer fuera mañana, hoy sería viernes. ¿Qué día es hoy?", "o": ["Miércoles", "Jueves", "Sábado", "Domingo"], "r": "Domingo", "cat": "Tiempo"}
+  // ... (Sigue este patrón hasta completar las 15)
+]
