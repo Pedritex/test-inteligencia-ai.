@@ -1,8 +1,17 @@
 [
-  {"id": 1, "p": "¿Qué número sigue? 2, 4, 8, 16...", "o": ["24", "30", "32", "64"], "r": "32", "cat": "Lógica"},
-  {"id": 2, "p": "Si todos los rosas son flores y algunas flores se marchitan, ¿todos los rosas se marchitan?", "o": ["Sí", "No", "Tal vez", "No se puede saber"], "r": "No se puede saber", "cat": "Silogismo"},
-  {"id": 3, "p": "Dedo es a mano como pétalo es a...", "o": ["Jardín", "Flor", "Tallo", "Polen"], "r": "Flor", "cat": "Analogía"},
-  {"id": 4, "p": "¿Qué palabra no encaja?", "o": ["León", "Tigre", "Gato", "Lobo"], "r": "Lobo", "cat": "Clasificación"},
-  {"id": 5, "p": "Si ayer fuera mañana, hoy sería viernes. ¿Qué día es hoy?", "o": ["Miércoles", "Jueves", "Sábado", "Domingo"], "r": "Domingo", "cat": "Tiempo"}
-  // ... (Sigue este patrón hasta completar las 15)
+  {"p": "¿Qué número sigue? 2, 4, 8, 16...", "o": ["24", "30", "32", "64"]},
+  {"p": "Si todos los rosas son flores y algunas flores se marchitan, ¿todos los rosas se marchitan?", "o": ["Sí", "No", "Tal vez", "No se puede saber"]},
+  {"p": "Dedo es a mano como pétalo es a...", "o": ["Jardín", "Flor", "Tallo", "Polen"]},
+  {"p": "¿Qué palabra no encaja?", "o": ["León", "Tigre", "Gato", "Lobo"]},
+  {"p": "Si ayer fuera mañana, hoy sería viernes. ¿Qué día es hoy?", "o": ["Miércoles", "Jueves", "Sábado", "Domingo"]},
+  {"p": "Completa la serie: A, C, E, G...", "o": ["H", "I", "J", "K"]},
+  {"p": "¿Cuál es el resultado de (10 * 2) + (5 / 1)?", "o": ["20", "25", "30", "15"]},
+  {"p": "Montaña es a tierra como ola es a...", "o": ["Barco", "Playa", "Agua", "Surf"]},
+  {"p": "Si tienes 3 manzanas y me quitas 2, ¿cuántas manzanas tienes?", "o": ["1", "2", "3", "0"]},
+  {"p": "¿Qué palabra es antónimo de 'Efímero'?", "o": ["Breve", "Eterno", "Rápido", "Luz"]},
+  {"p": "Si un tren eléctrico va hacia el norte, ¿hacia dónde sale el humo?", "o": ["Sur", "Norte", "Este", "Ninguna parte"]},
+  {"p": "¿Cuál de estos números es primo?", "o": ["4", "9", "13", "15"]},
+  {"p": "Pintura es a pincel como escritura es a...", "o": ["Libro", "Papel", "Bolígrafo", "Lectura"]},
+  {"p": "Si 5 máquinas hacen 5 artículos en 5 minutos, ¿cuánto tardan 100 máquinas en hacer 100 artículos?", "o": ["100 min", "50 min", "5 min", "1 min"]},
+  {"p": "¿Cuántos meses tienen 28 días?", "o": ["1", "6", "12", "Depende del año"]}
 ]
