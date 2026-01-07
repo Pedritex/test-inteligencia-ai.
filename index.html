@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CogniMetric - Test de Inteligencia</title>
+    <title>CogniMetric - Evaluación Profesional</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 40px; background-color: #f4f7f6; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
-        button { background-color: #1a1a1a; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; margin: 10px; transition: 0.3s; }
-        button:hover { background-color: #333; }
-        .opcion-btn { display: block; width: 100%; margin: 10px 0; background-color: #f8f9fa; color: #333; border: 1px solid #ddd; }
-        .opcion-btn:hover { background-color: #e9ecef; }
+        body { font-family: 'Inter', sans-serif; text-align: center; padding: 40px; background-color: #f0f2f5; color: #1c1e21; }
+        .card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 550px; margin: auto; min-height: 300px; display: flex; flex-direction: column; justify-content: center; }
+        h1 { font-size: 24px; margin-bottom: 10px; }
+        button { background-color: #007bff; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin: 10px 0; transition: 0.2s; width: 100%; }
+        button:hover { background-color: #0056b3; }
+        .opcion-btn { background-color: #ffffff; color: #4b4f56; border: 2px solid #e4e6eb; }
+        .opcion-btn:hover { background-color: #f2f3f5; border-color: #ccd0d5; }
+        #progreso { font-size: 14px; color: #606770; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -19,21 +21,21 @@
     <div class="card">
         <div id="landing">
             <h1>Evaluación de Coeficiente Intelectual</h1>
-            <p>Inicie nuestra prueba estandarizada de 15 dimensiones para obtener su informe.</p>
-            <button onclick="empezarTest()">Comenzar Evaluación Profesional</button>
+            <p>Inicie la prueba de 15 dimensiones para obtener su informe cognitivo.</p>
+            <button onclick="empezarTest()">Comenzar Evaluación</button>
         </div>
 
         <div id="test-container" style="display:none;">
-            <div id="progreso" style="color: #666; margin-bottom: 20px;">Pregunta <span id="num-pregunta">1</span> de 15</div>
-            <h2 id="pregunta-texto"></h2>
+            <div id="progreso">Pregunta <span id="num-pregunta">1</span> de 15</div>
+            <h2 id="pregunta-texto" style="margin-bottom: 30px;">Cargando...</h2>
             <div id="opciones"></div>
         </div>
 
         <div id="payment-wall" style="display:none;">
             <h2>Evaluación Finalizada</h2>
-            <p>Sus respuestas han sido procesadas correctamente.</p>
-            <p style="font-size: 24px; margin: 20px 0;">Precio del informe: <strong>5,00€</strong></p>
-            <button onclick="window.location.href='https://buy.stripe.com/TU_LINK_AQUI'">Desbloquear mi informe de CI</button>
+            <p>Hemos procesado sus respuestas. Desbloquee su informe detallado.</p>
+            <p style="font-size: 32px; margin: 20px 0;"><strong>5,00€</strong></p>
+            <button onclick="window.location.href='https://buy.stripe.com/test_3456'">Obtener mi Informe IA</button>
         </div>
     </div>
 
@@ -47,11 +49,9 @@
         let respuestasUsuario = [];
 
         async function cargarPreguntas() {
-            try {
-                const respuesta = await fetch('preguntas.json');
-                preguntas = await respuesta.json();
-                mostrarPregunta();
-            } catch (e) { console.error("Error cargando preguntas:", e); }
+            const res = await fetch('preguntas.json');
+            preguntas = await res.json();
+            mostrarPregunta();
         }
 
         function mostrarPregunta() {
@@ -61,33 +61,27 @@
             const opcionesDiv = document.getElementById('opciones');
             opcionesDiv.innerHTML = ''; 
             q.o.forEach(opcion => {
-                const boton = document.createElement('button');
-                boton.innerText = opcion;
-                boton.className = 'opcion-btn';
-                boton.onclick = () => seleccionarRespuesta(opcion);
-                opcionesDiv.appendChild(boton);
+                const btn = document.createElement('button');
+                btn.innerText = opcion;
+                btn.className = 'opcion-btn';
+                btn.onclick = () => siguiente(opcion);
+                opcionesDiv.appendChild(btn);
             });
         }
 
-        function seleccionarRespuesta(opcion) {
-            respuestasUsuario.push(opcion);
+        async function siguiente(respuesta) {
+            respuestasUsuario.push(respuesta);
             indiceActual++;
-            if (indiceActual === 15) {
-                guardarEnBaseDeDatos();
+            if (indiceActual < preguntas.length) {
+                mostrarPregunta();
+            } else {
                 document.getElementById('test-container').style.display = 'none';
                 document.getElementById('payment-wall').style.display = 'block';
-            } else {
-                mostrarPregunta();
+                await _supabase.from('resultados_test').insert([{ 
+                    respuestas_json: respuestasUsuario,
+                    dispositivo: navigator.userAgent
+                }]);
             }
-        }
-
-        async function guardarEnBaseDeDatos() {
-            const { error } = await _supabase.from('resultados_test').insert([{ 
-                respuestas_json: respuestasUsuario,
-                dispositivo: navigator.userAgent,
-                pago_confirmado: false
-            }]);
-            if (error) console.error('Error en Supabase:', error);
         }
 
         function empezarTest() {
