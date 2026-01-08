@@ -1,60 +1,60 @@
 <script>
-        // Configuración de Supabase
-        const supabaseUrl = 'https://tdollntpciqljmoafsiz.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkb2xsbnRwY2lxbGptb2Fmc2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NzUyMjYsImV4cCI6MjA4MzM1MTIyNn0.swbOXuSL0__mETh1nhHkgYuXprbOIvXRYYLzbWJoEOk';
-        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    // Configuración de Supabase
+    const supabaseUrl = 'https://tdollntpciqljmoafsiz.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkb2xsbnRwY2lxbGptb2Fmc2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NzUyMjYsImV4cCI6MjA4MzM1MTIyNn0.swbOXuSL0__mETh1nhHkgYuXprbOIvXRYYLzbWJoEOk';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        let preguntas = [];
-        let indiceActual = 0;
-        let respuestasUsuario = [];
+    let preguntas = [];
+    let indiceActual = 0;
+    let respuestasUsuario = [];
 
-        async function cargarPreguntas() {
-            // Nota: Asegúrate de que preguntas.json esté en la misma carpeta en GitHub
-            const res = await fetch('preguntas.json');
-            preguntas = await res.json();
+    async function cargarPreguntas() {
+        const res = await fetch('preguntas.json');
+        preguntas = await res.json();
+        mostrarPregunta();
+    }
+
+    function mostrarPregunta() {
+        const q = preguntas[indiceActual];
+        document.getElementById('num-pregunta').innerText = indiceActual + 1;
+        document.getElementById('pregunta-texto').innerText = q.p;
+        const opcionesDiv = document.getElementById('opciones');
+        opcionesDiv.innerHTML = ''; 
+        q.o.forEach(opcion => {
+            const btn = document.createElement('button');
+            btn.innerText = opcion;
+            btn.className = 'opcion-btn';
+            btn.onclick = () => siguiente(opcion);
+            opcionesDiv.appendChild(btn);
+        });
+    }
+
+    async function siguiente(respuesta) {
+        respuestasUsuario.push(`Pregunta ${indiceActual + 1}: ${respuesta}`);
+        indiceActual++;
+        
+        if (indiceActual < preguntas.length) {
             mostrarPregunta();
-        }
-
-        function mostrarPregunta() {
-            const q = preguntas[indiceActual];
-            document.getElementById('num-pregunta').innerText = indiceActual + 1;
-            document.getElementById('pregunta-texto').innerText = q.p;
-            const opcionesDiv = document.getElementById('opciones');
-            opcionesDiv.innerHTML = ''; 
-            q.o.forEach(opcion => {
-                const btn = document.createElement('button');
-                btn.innerText = opcion;
-                btn.className = 'opcion-btn';
-                btn.onclick = () => siguiente(opcion);
-                opcionesDiv.appendChild(btn);
-            });
-        }
-
-        async function siguiente(respuesta) {
-            respuestasUsuario.push(`Pregunta ${indiceActual + 1}: ${respuesta}`);
-            indiceActual++;
+        } else {
+            // TEST FINALIZADO
+            document.getElementById('test-container').style.display = 'none';
+            document.getElementById('payment-wall').style.display = 'block';
             
-            if (indiceActual < preguntas.length) {
-                mostrarPregunta();
-            } else {
-                document.getElementById('test-container').style.display = 'none';
-                document.getElementById('payment-wall').style.display = 'block';
-                
-                // --- CAMBIO CLAVE: GUARDAR PARA EL EMAIL ---
-                // Guardamos las respuestas en el navegador para leerlas tras el pago
-                localStorage.setItem('respuestas_test', respuestasUsuario.join(' | '));
+            // --- PASO CRÍTICO ---
+            // Guardamos las respuestas en el navegador para que gracias.html las pueda leer tras el pago
+            localStorage.setItem('respuestas_test', respuestasUsuario.join(' | '));
 
-                // Guardamos copia de seguridad en Supabase (como ya hacías)
-                await _supabase.from('resultados_test').insert([{ 
-                    respuestas_json: respuestasUsuario,
-                    dispositivo: navigator.userAgent
-                }]);
-            }
+            // Guardamos el registro en Supabase como copia de seguridad
+            await _supabase.from('resultados_test').insert([{ 
+                respuestas_json: respuestasUsuario,
+                dispositivo: navigator.userAgent
+            }]);
         }
+    }
 
-        function empezarTest() {
-            document.getElementById('landing').style.display = 'none';
-            document.getElementById('test-container').style.display = 'block';
-            cargarPreguntas();
-        }
-    </script>
+    function empezarTest() {
+        document.getElementById('landing').style.display = 'none';
+        document.getElementById('test-container').style.display = 'block';
+        cargarPreguntas();
+    }
+</script>
