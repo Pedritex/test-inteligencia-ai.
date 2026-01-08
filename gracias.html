@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generando Informe - CogniMetric</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; text-align: center; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 450px; width: 90%; }
+        .loader { border: 6px solid #f3f3f3; border-top: 6px solid #007bff; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        h2 { color: #1c1e21; margin-top: 20px; }
+        p { color: #606770; line-height: 1.5; }
+        .success-icon { font-size: 60px; color: #28a745; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="loading-state">
+            <div class="loader"></div>
+            <h2>¡Pago Confirmado!</h2>
+            <p>Estamos analizando tus respuestas y redactando tu informe detallado. Por favor, <b>no cierres esta pestaña</b>.</p>
+        </div>
+
+        <div id="success-state" style="display: none;">
+            <div class="success-icon">📩</div>
+            <h2 style="color: #28a745;">¡Informe Enviado!</h2>
+            <p>Tu análisis cognitivo profesional ha sido enviado a: <br><b>pedro@zemobile.com</b></p>
+            <p style="font-size: 14px; margin-top: 20px;">Ya puedes cerrar esta ventana. ¡Gracias por confiar en nosotros!</p>
+        </div>
+
+        <div id="error-state" style="display: none;">
+            <h2 style="color: #dc3545;">Algo ha fallado</h2>
+            <p>El pago se ha realizado, pero hubo un error al generar el informe automáticamente.</p>
+            <p>No te preocupes, escríbenos a soporte y te lo enviaremos manualmente.</p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = async function() {
+            // 1. URL de tu función en Supabase basada en tu proyecto
+            const url = "https://tdollntpciqljmoafsiz.supabase.co/functions/v1/analizar-test";
+
+            // 2. Recuperamos las respuestas guardadas en el index.html original
+            const respuestas = localStorage.getItem('respuestas_test');
+
+            if (!respuestas) {
+                console.error("No se encontraron respuestas en el almacenamiento local.");
+                return;
+            }
+
+            try {
+                // 3. Llamada automática a la IA
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ respuestas: respuestas })
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.success) {
+                    // 4. Mostrar estado de éxito
+                    document.getElementById('loading-state').style.display = 'none';
+                    document.getElementById('success-state').style.display = 'block';
+                    document.querySelector('.success-icon').style.display = 'block';
+                    
+                    // Limpiamos la memoria del navegador por seguridad
+                    localStorage.removeItem('respuestas_test');
+                } else {
+                    throw new Error("Error en la respuesta de la función");
+                }
+
+            } catch (error) {
+                console.error("Error final:", error);
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+            }
+        };
+    </script>
+</body>
+</html>
