@@ -1,44 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CogniMetric - Evaluación Profesional</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; text-align: center; padding: 40px; background-color: #f0f2f5; color: #1c1e21; }
-        .card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 550px; margin: auto; min-height: 300px; display: flex; flex-direction: column; justify-content: center; }
-        button { background-color: #007bff; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin: 10px 0; transition: 0.2s; width: 100%; }
-        button:hover { background-color: #0056b3; }
-        .opcion-btn { background-color: #ffffff; color: #4b4f56; border: 2px solid #e4e6eb; }
-        .opcion-btn:hover { background-color: #f2f3f5; border-color: #ccd0d5; }
-        #progreso { font-size: 14px; color: #606770; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
-    </style>
-</head>
-<body>
-
-    <div class="card">
-        <div id="landing">
-            <h1>Evaluación de Coeficiente Intelectual</h1>
-            <p>Inicie la prueba de 15 dimensiones para obtener su informe cognitivo.</p>
-            <button onclick="empezarTest()">Comenzar Evaluación</button>
-        </div>
-
-        <div id="test-container" style="display:none;">
-            <div id="progreso">Pregunta <span id="num-pregunta">1</span> de 15</div>
-            <h2 id="pregunta-texto" style="margin-bottom: 30px;">Cargando...</h2>
-            <div id="opciones"></div>
-        </div>
-
-        <div id="payment-wall" style="display:none;">
-            <h2>Evaluación Finalizada</h2>
-            <p>Hemos procesado sus respuestas. Desbloquee su informe detallado.</p>
-            <p style="font-size: 32px; margin: 20px 0;"><strong>5,00€</strong></p>
-            <button onclick="window.location.href='https://buy.stripe.com/test_6oUaEZ3VD1mS7v4bGKdwc00'">Obtener mi Informe IA</button>
-        </div>
-    </div>
-
-    <script>
+<script>
         // Configuración de Supabase
         const supabaseUrl = 'https://tdollntpciqljmoafsiz.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkb2xsbnRwY2lxbGptb2Fmc2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NzUyMjYsImV4cCI6MjA4MzM1MTIyNn0.swbOXuSL0__mETh1nhHkgYuXprbOIvXRYYLzbWJoEOk';
@@ -49,6 +9,7 @@
         let respuestasUsuario = [];
 
         async function cargarPreguntas() {
+            // Nota: Asegúrate de que preguntas.json esté en la misma carpeta en GitHub
             const res = await fetch('preguntas.json');
             preguntas = await res.json();
             mostrarPregunta();
@@ -70,15 +31,20 @@
         }
 
         async function siguiente(respuesta) {
-            respuestasUsuario.push(respuesta);
+            respuestasUsuario.push(`Pregunta ${indiceActual + 1}: ${respuesta}`);
             indiceActual++;
+            
             if (indiceActual < preguntas.length) {
                 mostrarPregunta();
             } else {
                 document.getElementById('test-container').style.display = 'none';
                 document.getElementById('payment-wall').style.display = 'block';
                 
-                // Guardamos en la tabla resultados_test
+                // --- CAMBIO CLAVE: GUARDAR PARA EL EMAIL ---
+                // Guardamos las respuestas en el navegador para leerlas tras el pago
+                localStorage.setItem('respuestas_test', respuestasUsuario.join(' | '));
+
+                // Guardamos copia de seguridad en Supabase (como ya hacías)
                 await _supabase.from('resultados_test').insert([{ 
                     respuestas_json: respuestasUsuario,
                     dispositivo: navigator.userAgent
@@ -92,5 +58,3 @@
             cargarPreguntas();
         }
     </script>
-</body>
-</html>
